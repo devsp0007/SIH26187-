@@ -5,10 +5,8 @@
  */
 
 // In browser, using relative path '' routes through Vite reverse proxy on same origin, avoiding CORB and CORS issues
-export const API_BASE = typeof window !== 'undefined' ? '' : 'http://127.0.0.1:8000';
-export const WS_BASE = typeof window !== 'undefined'
-  ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
-  : 'ws://127.0.0.1:8000';
+export const API_BASE = 'https://sih26187.onrender.com';
+export const WS_BASE = 'wss://sih26187.onrender.com';
 
 // In-memory token storage (strictly not stored in localStorage to prevent XSS token theft)
 let _authToken = null;
