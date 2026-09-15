@@ -1,0 +1,65 @@
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.npm
+.eslintcache
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# SQLite Databases & Cache
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+backend/test_*.db
+
+# Live Frames, Snapshots & Temp Media
+backend/live_frame_*.jpg
+backend/snapshots/
+backend/test_data/
+backend/watchlist/
+backend/test_videos/annotated_*.mp4
+backend/test_videos/output_*.mp4
+backend/test_*.mp4
+
+# YOLO / Large Weights (Ultralytics auto-downloads yolov8n.pt if absent)
+*.pt
+!backend/models/.gitkeep
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# Temp UI screenshots & Vite timestamp artifacts
+/*.png
+*.mjs.timestamp*
+vite.config.js.timestamp-*

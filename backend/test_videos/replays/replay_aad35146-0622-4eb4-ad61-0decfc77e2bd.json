@@ -1,0 +1,15 @@
+{
+  "status": "ready",
+  "event_id": "aad35146-0622-4eb4-ad61-0decfc77e2bd",
+  "camera_id": "CAM_01",
+  "event_type": "zone_entry",
+  "timestamp": "2026-09-01T08:26:37.069106+00:00",
+  "source_video": "tracking_test.mp4",
+  "target_frame": 50,
+  "start_frame": 0,
+  "end_frame": 140,
+  "total_clip_frames": 141,
+  "fps": 30.0,
+  "duration_seconds": 4.7,
+  "window_description": "T-3.0s to T+3.0s around Zone Entry"
+}

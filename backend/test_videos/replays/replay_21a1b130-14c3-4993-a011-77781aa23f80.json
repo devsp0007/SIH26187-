@@ -1,0 +1,15 @@
+{
+  "status": "ready",
+  "event_id": "21a1b130-14c3-4993-a011-77781aa23f80",
+  "camera_id": "CAM_01",
+  "event_type": "zone_exit",
+  "timestamp": "2026-08-30T10:59:34.128232+00:00",
+  "source_video": "real_footage_1.mp4",
+  "target_frame": 343,
+  "start_frame": 307,
+  "end_frame": 379,
+  "total_clip_frames": 73,
+  "fps": 12.0,
+  "duration_seconds": 6.08,
+  "window_description": "T-3.0s to T+3.0s around Zone Exit"
+}
