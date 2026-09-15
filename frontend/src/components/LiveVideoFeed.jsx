@@ -172,7 +172,7 @@ export default function LiveVideoFeed({
     setStreamMode('mjpeg');
     try {
       await startStream(cameraId, {
-        source: '0',
+        source: 'https://cilantro-glitter-gristle.ngrok-free.dev/video',
         sourceType: 'webcam',
         imgsz: 384,
         showZone: showZone,
@@ -196,7 +196,7 @@ export default function LiveVideoFeed({
     try {
       if (activeSourceType === 'webcam') {
         await startStream(cameraId, {
-          source: '0',
+          source: 'https://cilantro-glitter-gristle.ngrok-free.dev/video',
           sourceType: 'webcam',
           imgsz: 384,
           showZone: nextZone,
