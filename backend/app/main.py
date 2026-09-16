@@ -68,6 +68,9 @@ try:
         require_admin,
         require_supervisor_or_admin,
         update_user_last_login,
+        get_all_users,
+        create_new_user,
+        delete_user,
     )
     from backend.app.admin_management import (
         add_or_update_authorized_vehicle,
@@ -448,6 +451,37 @@ def get_current_user_profile(current_user: dict = Depends(get_current_user)):
 
 # =====================================================================
 # Admin Command Panel Endpoints (Requires 'admin' Role)
+# =====================================================================
+@app.get("/api/admin/users")
+def get_users(current_user: dict = Depends(require_admin)):
+    """Retrieve all users in the system."""
+    return get_all_users()
+
+class UserCreateRequest(BaseModel):
+    username: str
+    password: str
+    role: str
+    full_name: str
+
+@app.post("/api/admin/users")
+def create_user(req: UserCreateRequest, current_user: dict = Depends(require_admin)):
+    """Create a new user account."""
+    if req.role not in ["operator", "supervisor"]:
+        raise HTTPException(status_code=400, detail="Can only create operator or supervisor accounts.")
+    success = create_new_user(req.username.strip(), req.password, req.role, req.full_name)
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to create user (username may exist).")
+    return {"message": "User created successfully."}
+
+@app.delete("/api/admin/users/{username}")
+def remove_user(username: str, current_user: dict = Depends(require_admin)):
+    """Delete a user account."""
+    if username == "admin":
+        raise HTTPException(status_code=400, detail="Cannot delete root admin account.")
+    success = delete_user(username)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found or deletion failed.")
+    return {"message": "User deleted successfully."}
 # =====================================================================
 @app.get("/api/admin/watchlist")
 def get_admin_watchlist(current_user: dict = Depends(require_supervisor_or_admin)):

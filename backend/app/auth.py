@@ -161,26 +161,71 @@ def init_users_table(db_path: Optional[Path] = None) -> Path:
 
     return db_path
 
-
-def get_user_by_username(username: str, db_path: Optional[Path] = None) -> Optional[Dict[str, Any]]:
-    """Fetch user record by username."""
-    if db_path is None:
-        db_path = get_default_db_path()
-
-    if not db_path.exists():
-        return None
-
+def authenticate_user(username: str, password: str, db_path: Optional[Path] = None) -> Optional[Dict[str, Any]]:
+    """Validate user credentials against stored bcrypt hash."""
+    db_path = db_path or get_default_db_path()
     try:
-        with sqlite3.connect(db_path, timeout=10.0) as conn:
+        with sqlite3.connect(db_path, timeout=5.0) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-            row = cursor.fetchone()
-            if row:
-                return dict(row)
+            user_row = cursor.fetchone()
+            
+            if not user_row:
+                return None
+            
+            if not verify_password(password, user_row["password_hash"]):
+                return None
+                
+            return dict(user_row)
+    except Exception as e:
+        print(f"[AUTH ERROR] Failed to authenticate user: {e}")
+        return None
+
+def get_all_users(db_path: Optional[Path] = None) -> list:
+    """Retrieve all users without password hashes."""
+    db_path = db_path or get_default_db_path()
+    try:
+        with sqlite3.connect(db_path, timeout=5.0) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT username, role, full_name, created_at, last_login FROM users")
+            return [dict(row) for row in cursor.fetchall()]
     except Exception:
-        pass
-    return None
+        return []
+
+
+def create_new_user(username: str, plain_password: str, role: str, full_name: str, db_path: Optional[Path] = None) -> bool:
+    """Create a new user with hashed password."""
+    db_path = db_path or get_default_db_path()
+    try:
+        hashed = hash_password(plain_password)
+        now_str = datetime.now(timezone.utc).isoformat()
+        with sqlite3.connect(db_path, timeout=5.0) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO users (username, password_hash, role, full_name, created_at) VALUES (?, ?, ?, ?, ?)",
+                (username, hashed, role, full_name, now_str)
+            )
+            conn.commit()
+            return True
+    except Exception:
+        return False
+
+
+def delete_user(username: str, db_path: Optional[Path] = None) -> bool:
+    """Delete a user from the system."""
+    if username == 'admin':
+        return False  # Protect root admin
+    db_path = db_path or get_default_db_path()
+    try:
+        with sqlite3.connect(db_path, timeout=5.0) as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM users WHERE username = ?", (username,))
+            conn.commit()
+            return cursor.rowcount > 0
+    except Exception:
+        return False
 
 
 def update_user_last_login(username: str, db_path: Optional[Path] = None):

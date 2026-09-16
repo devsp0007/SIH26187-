@@ -47,8 +47,11 @@ export default function LoginPage() {
     setLocalError('');
     clearError();
     setIsSubmitting(true);
-    const user = role === 'admin' ? 'admin' : 'operator';
-    const pass = role === 'admin' ? 'Admin@IBVAP2026!' : 'Operator@IBVAP2026!';
+    let user, pass;
+    if (role === 'admin') { user = 'admin'; pass = 'Admin@IBVAP2026!'; }
+    else if (role === 'supervisor') { user = 'supervisor'; pass = 'Supervisor@IBVAP2026!'; }
+    else { user = 'operator'; pass = 'Operator@IBVAP2026!'; }
+
     setUsername(user);
     setPassword('');
 
@@ -193,7 +196,7 @@ export default function LoginPage() {
           <div className="demo-credentials-label">
             <span>QUICK EVALUATION ACCESS</span>
           </div>
-          <div className="demo-chips-row">
+          <div className="demo-chips-row" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               type="button"
               className="demo-chip chip-admin"
@@ -205,6 +208,21 @@ export default function LoginPage() {
               <div className="chip-text">
                 <strong>Login as Admin</strong>
                 <span className="chip-role-desc">Full Command Access</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              className="demo-chip chip-supervisor"
+              onClick={() => handleQuickLogin('supervisor')}
+              disabled={isSubmitting}
+              title="One-click authentication as Supervisor"
+              style={{ background: 'rgba(22, 163, 74, 0.15)', border: '1px solid rgba(22, 163, 74, 0.3)', color: 'var(--text-primary)' }}
+            >
+              <Users size={14} style={{ color: '#16a34a' }}/>
+              <div className="chip-text">
+                <strong>Login as Supervisor</strong>
+                <span className="chip-role-desc">Shift Management</span>
               </div>
             </button>
 
@@ -240,6 +258,10 @@ export default function LoginPage() {
                 <div className="drawer-item">
                   <span className="drawer-role admin-color">Admin:</span>
                   <code>username: <strong>admin</strong> | password: <strong>Admin@IBVAP2026!</strong></code>
+                </div>
+                <div className="drawer-item">
+                  <span className="drawer-role" style={{ color: '#16a34a' }}>Supervisor:</span>
+                  <code>username: <strong>supervisor</strong> | password: <strong>Supervisor@IBVAP2026!</strong></code>
                 </div>
                 <div className="drawer-item">
                   <span className="drawer-role operator-color">Operator:</span>

@@ -268,7 +268,7 @@ function MainLayout() {
         onToggleVoiceMute={() => voiceAlertService.toggleMute()}
         onTestVoice={() => voiceAlertService.testVoice()}
       />
-      <div style={{ padding: '0 1rem', background: '#0f172a', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ padding: '0 1rem', background: 'var(--bg-panel)', borderBottom: '1px solid var(--border-subtle)' }}>
         <NavigationTabs />
       </div>
 

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loginUser, fetchAuthConfig, setAuthToken } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -9,6 +10,7 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [authDisabled, setAuthDisabled] = useState(false);
   const [authError, setAuthError] = useState(null);
+  const navigate = useNavigate();
 
   // Check system authentication configuration on mount
   useEffect(() => {
@@ -49,6 +51,12 @@ export function AuthProvider({ children }) {
       setUser(data.user);
       setToken(data.access_token);
       setAuthToken(data.access_token);
+      
+      // Automatic Role-Based Routing
+      if (data.user.role === 'admin') navigate('/admin');
+      else if (data.user.role === 'supervisor') navigate('/supervisor');
+      else navigate('/');
+      
       return data.user;
     } catch (err) {
       setAuthError(err.message || 'Authentication failed');

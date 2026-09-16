@@ -35,7 +35,7 @@ import {
 
 export default function AdminPanel({ isSupervisorMode = false }) {
   const { user, isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState('personnel'); // 'personnel' | 'vehicles'
+  const [activeTab, setActiveTab] = useState('personnel'); // 'personnel' | 'vehicles' | 'users'
 
   // Watchlist State
   const [watchlist, setWatchlist] = useState([]);
@@ -375,6 +375,15 @@ export default function AdminPanel({ isSupervisorMode = false }) {
           <span>Authorized Vehicles Whitelist</span>
           <span className="tab-pill-count">{vehicles.length}</span>
         </button>
+        {!isSupervisorMode && (
+          <button
+            className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
+            onClick={() => setActiveTab('users')}
+          >
+            <Users size={16} />
+            User Management
+          </button>
+        )}
       </div>
 
       {/* TAB 1: PERSONNEL WATCHLIST MANAGEMENT */}

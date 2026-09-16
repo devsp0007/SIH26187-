@@ -338,8 +338,8 @@ export default function LiveVideoFeed({
               onChange={(e) => onSelectCamera?.(e.target.value)}
               aria-label="Select Monitored Camera"
               style={{
-                background: '#0f172a',
-                color: '#f8fafc',
+                background: 'var(--bg-panel)',
+                color: 'var(--text-primary)',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: '4px',
                 padding: '0.2rem 0.5rem',
@@ -349,7 +349,7 @@ export default function LiveVideoFeed({
               }}
             >
               {validCameras.map((cam) => (
-                <option key={cam.camera_id} value={cam.camera_id} style={{ background: '#0f172a', color: '#f8fafc' }}>
+                <option key={cam.camera_id} value={cam.camera_id} style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>
                   {cam.name || cam.camera_id} ({cam.location || 'Perimeter Sector'})
                 </option>
               ))}
@@ -360,7 +360,7 @@ export default function LiveVideoFeed({
         {/* Action Controls & Feed Selector */}
         <div className="feed-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           {/* Quick Video Scenario Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#0f172a', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(56, 189, 248, 0.4)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-panel)', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(56, 189, 248, 0.4)' }}>
             <Film size={13} style={{ color: '#38bdf8' }} />
             <select
               value={selectedVideo}
@@ -370,9 +370,9 @@ export default function LiveVideoFeed({
                 handleStartVideoFeed(vid);
               }}
               style={{
-                background: '#0f172a',
+                background: 'var(--bg-panel)',
                 border: 'none',
-                color: '#f8fafc',
+                color: 'var(--text-primary)',
                 fontSize: '0.78rem',
                 fontWeight: 600,
                 outline: 'none',
@@ -381,13 +381,13 @@ export default function LiveVideoFeed({
               }}
               title="Select Video Surveillance Scenario"
             >
-              <option value="sample.mp4" style={{ background: '#0f172a', color: '#f8fafc' }}>Sector 01 (Bus & Person Intrusion)</option>
-              <option value="tracking_test.mp4" style={{ background: '#0f172a', color: '#f8fafc' }}>Sector 04 (Multi-Target Tracking)</option>
-              <option value="dark_test.mp4" style={{ background: '#0f172a', color: '#f8fafc' }}>Night Vision (CLAHE Retinex)</option>
-              <option value="foggy_test.mp4" style={{ background: '#0f172a', color: '#f8fafc' }}>Adverse Fog (DCP Dehazing)</option>
-              <option value="suspicious_behavior_test.mp4" style={{ background: '#0f172a', color: '#f8fafc' }}>Perimeter (Loitering & Pacing)</option>
-              <option value="real_footage_1.mp4" style={{ background: '#0f172a', color: '#f8fafc' }}>Outpost 01 (Real Surveillance)</option>
-              <option value="real_footage_2.mp4" style={{ background: '#0f172a', color: '#f8fafc' }}>Outpost 02 (Real Surveillance)</option>
+              <option value="sample.mp4" style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>Sector 01 (Bus & Person Intrusion)</option>
+              <option value="tracking_test.mp4" style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>Sector 04 (Multi-Target Tracking)</option>
+              <option value="dark_test.mp4" style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>Night Vision (CLAHE Retinex)</option>
+              <option value="foggy_test.mp4" style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>Adverse Fog (DCP Dehazing)</option>
+              <option value="suspicious_behavior_test.mp4" style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>Perimeter (Loitering & Pacing)</option>
+              <option value="real_footage_1.mp4" style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>Outpost 01 (Real Surveillance)</option>
+              <option value="real_footage_2.mp4" style={{ background: 'var(--bg-panel)', color: 'var(--text-primary)' }}>Outpost 02 (Real Surveillance)</option>
             </select>
           </div>
 
