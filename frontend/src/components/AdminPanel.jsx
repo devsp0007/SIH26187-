@@ -304,35 +304,36 @@ export default function AdminPanel({ isSupervisorMode = false }) {
 
   return (
     <div className="admin-panel-container">
-      {/* Top Admin Header Bar */}
-      <div className="admin-top-header">
-        <div className="admin-header-title-block">
-          <div className="admin-header-icon">
-            <ShieldCheck size={24} style={{ color: '#0ea5e9' }} />
+      {/* ADMIN HEADER BANNER */}
+      <div style={{ background: 'var(--bg-panel)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ background: 'rgba(220, 38, 38, 0.1)', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(220, 38, 38, 0.3)' }}>
+            <ShieldCheck size={24} style={{ color: '#dc2626' }} />
           </div>
           <div>
-            <div className="admin-title">
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
               Admin Command & Clearance Registry
-              <span className="admin-role-badge">ADMIN ACCESS ACTIVE</span>
-            </div>
-            <div className="admin-subtitle">
+              <span style={{ fontSize: '0.65rem', padding: '0.15rem 0.4rem', background: 'rgba(220, 38, 38, 0.15)', color: '#dc2626', borderRadius: '4px', border: '1px solid rgba(220, 38, 38, 0.3)', letterSpacing: '0.05em' }}>
+                ADMIN ACCESS ACTIVE
+              </span>
+            </h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0 0 0', maxWidth: '600px' }}>
               Manage authorized personnel facial identification profiles and ANPR vehicle whitelists with automated access control & expiration governance.
-            </div>
+            </p>
           </div>
         </div>
-
-        <div className="admin-header-actions">
-          <button
-            type="button"
-            className={`rescan-btn ${isRescanning ? 'loading' : ''}`}
-            onClick={handleRescanWatchlist}
-            disabled={isRescanning}
-            title="Re-scan backend/watchlist/ folder and regenerate all facial embeddings in memory without restarting server"
-          >
-            <RefreshCw size={16} className={isRescanning ? 'spin-icon' : ''} />
-            <span>{isRescanning ? 'RE-SCANNING...' : 'RE-SCAN WATCHLIST'}</span>
-          </button>
-        </div>
+        
+        <button
+          type="button"
+          className="admin-action-btn"
+          onClick={handleRescanWatchlist}
+          disabled={isRescanning}
+          style={{ background: 'var(--accent-red)', color: '#fff', border: 'none', padding: '0.6rem 1rem', borderRadius: 'var(--radius-md)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          title="Re-scan backend/watchlist/ folder and regenerate all facial embeddings in memory without restarting server"
+        >
+          <RefreshCw size={16} className={isRescanning ? 'spin-icon' : ''} />
+          <span>{isRescanning ? 'RE-SCANNING...' : 'RE-SCAN WATCHLIST'}</span>
+        </button>
       </div>
 
       {/* Notification Toast Banner */}
@@ -377,11 +378,11 @@ export default function AdminPanel({ isSupervisorMode = false }) {
         </button>
         {!isSupervisorMode && (
           <button
-            className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
+            className={`admin-subtab-btn ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => setActiveTab('users')}
           >
             <Users size={16} />
-            User Management
+            <span>User Management</span>
           </button>
         )}
       </div>

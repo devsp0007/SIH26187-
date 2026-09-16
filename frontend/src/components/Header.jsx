@@ -53,40 +53,6 @@ export default function Header({
         </div>
       </div>
 
-      <nav className="nav-tabs" aria-label="Primary Navigation">
-        <button
-          className={`nav-btn ${activeTab === 'live' ? 'active' : ''}`}
-          onClick={() => setActiveTab('live')}
-          aria-pressed={activeTab === 'live'}
-        >
-          <Radio size={16} />
-          <span>Live Surveillance</span>
-          {liveCount > 0 && (
-            <span className="nav-count-badge" title={`${liveCount} active alerts`}>
-              {liveCount}
-            </span>
-          )}
-        </button>
-        <button
-          className={`nav-btn ${activeTab === 'history' ? 'active' : ''}`}
-          onClick={() => setActiveTab('history')}
-          aria-pressed={activeTab === 'history'}
-        >
-          <History size={16} />
-          <span>Event Forensics</span>
-        </button>
-        {isAdmin && (
-          <button
-            className={`nav-btn ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={() => setActiveTab('admin')}
-            aria-pressed={activeTab === 'admin'}
-          >
-            <ShieldCheck size={16} style={{ color: activeTab === 'admin' ? '#38bdf8' : 'currentColor' }} />
-            <span>Admin Panel</span>
-          </button>
-        )}
-      </nav>
-
       <div className="telemetry-bar">
         {/* Voice / Audio Alert Toggle & Status */}
         <div className="voice-control-group">

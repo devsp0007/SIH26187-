@@ -67,12 +67,8 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: 
-    radial-gradient(circle at 50% -20%, rgba(220, 38, 38, 0.05), transparent 50%),
-    radial-gradient(circle at 85% 60%, rgba(22, 163, 74, 0.03), transparent 40%),
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  background-image: none;
+  background-size: auto;
 }
 
 /* Polished Scrollbar */
@@ -3023,6 +3019,39 @@ body {
   border-color: #ef4444;
   color: #fff;
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Global App Navigation Tabs (React Router) */
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.tab-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: var(--accent-red);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 1rem;
 }
 
 /* Vehicle Plate Badge */
