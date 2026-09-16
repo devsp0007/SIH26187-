@@ -49,6 +49,7 @@ export default function LiveVideoFeed({
   const [showZone, setShowZone] = useState(true);
   const [activeSourceType, setActiveSourceType] = useState('test_video');
   const [manuallyStopped, setManuallyStopped] = useState(false);
+  const [currentRtspUrl, setCurrentRtspUrl] = useState('');
   const videoContainerRef = useRef(null);
   const fallbackIntervalRef = useRef(null);
 
@@ -162,9 +163,13 @@ export default function LiveVideoFeed({
     }
   };
 
-  // 1-Click Launch Live Webcam
-  const handleStartWebcam = async () => {
-    setActiveSourceType('webcam');
+  // 1-Click Launch Live IP/RTSP Stream
+  const handleStartRTSP = async () => {
+    const url = window.prompt("Enter RTSP or HTTP IP Camera stream URL:", currentRtspUrl || "");
+    if (!url || !url.trim()) return;
+
+    setCurrentRtspUrl(url.trim());
+    setActiveSourceType('rtsp');
     setManuallyStopped(false);
     setIsControllingStream(true);
     setHasError(false);
@@ -172,16 +177,16 @@ export default function LiveVideoFeed({
     setStreamMode('mjpeg');
     try {
       await startStream(cameraId, {
-        source: 'https://cilantro-glitter-gristle.ngrok-free.dev/video',
-        sourceType: 'webcam',
-        imgsz: 384,
+        source: url.trim(),
+        sourceType: 'rtsp',
+        imgsz: 640,
         showZone: showZone,
       });
       setTimeout(() => {
         setStreamKey(Date.now());
       }, 1200);
     } catch (err) {
-      alert(`Failed to start webcam: ${err.message}`);
+      alert(`Failed to start IP Stream: ${err.message}`);
     } finally {
       setIsControllingStream(false);
     }
@@ -194,11 +199,11 @@ export default function LiveVideoFeed({
     setManuallyStopped(false);
     setIsControllingStream(true);
     try {
-      if (activeSourceType === 'webcam') {
+      if (activeSourceType === 'rtsp' && currentRtspUrl) {
         await startStream(cameraId, {
-          source: 'https://cilantro-glitter-gristle.ngrok-free.dev/video',
-          sourceType: 'webcam',
-          imgsz: 384,
+          source: currentRtspUrl,
+          sourceType: 'rtsp',
+          imgsz: 640,
           showZone: nextZone,
         });
       } else {
@@ -410,12 +415,12 @@ export default function LiveVideoFeed({
             <span>Play Feed</span>
           </button>
 
-          {/* Webcam Button */}
+          {/* IP Stream Button */}
           <button
             className="icon-btn"
-            onClick={handleStartWebcam}
+            onClick={handleStartRTSP}
             disabled={isControllingStream}
-            title="Activate Live Webcam Device"
+            title="Connect IP Camera or RTSP Stream"
             style={{
               background: 'rgba(16, 185, 129, 0.2)',
               border: '1px solid #10b981',
@@ -431,7 +436,7 @@ export default function LiveVideoFeed({
             }}
           >
             <Video size={13} />
-            <span>Webcam</span>
+            <span>IP Stream</span>
           </button>
 
           {/* Virtual Fence Zone (Blue Box) Toggle Button */}
@@ -593,7 +598,7 @@ export default function LiveVideoFeed({
                 <span>Resume Feed</span>
               </button>
               <button
-                onClick={handleStartWebcam}
+                onClick={handleStartRTSP}
                 disabled={isControllingStream}
                 style={{
                   background: 'rgba(16, 185, 129, 0.15)',
@@ -611,7 +616,7 @@ export default function LiveVideoFeed({
                 }}
               >
                 <Video size={15} />
-                <span>Activate Webcam</span>
+                <span>Connect IP Stream</span>
               </button>
             </div>
           </div>

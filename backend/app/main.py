@@ -21,6 +21,7 @@ import threading
 import time
 import re
 import uuid
+import base64
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, List, Optional
@@ -65,6 +66,7 @@ try:
         get_current_user,
         is_auth_disabled,
         require_admin,
+        require_supervisor_or_admin,
         update_user_last_login,
     )
     from backend.app.admin_management import (
@@ -78,6 +80,7 @@ try:
         get_watchlist_person,
         init_admin_tables,
     )
+    from backend.app.cloud_sync import cloud_sync_daemon
     from backend.app.replay_service import extract_incident_replay_clip, extract_event_target_crop
 except ImportError:
     from events import (
@@ -98,6 +101,7 @@ except ImportError:
         get_current_user,
         is_auth_disabled,
         require_admin,
+        require_supervisor_or_admin,
         update_user_last_login,
     )
     from admin_management import (
@@ -111,6 +115,10 @@ except ImportError:
         get_watchlist_person,
         init_admin_tables,
     )
+    try:
+        from cloud_sync import cloud_sync_daemon
+    except ImportError:
+        cloud_sync_daemon = lambda *a, **k: None
     try:
         from replay_service import extract_incident_replay_clip, extract_event_target_crop
     except ImportError:
@@ -265,6 +273,9 @@ def launch_analytics_stream(
 
         if source_type == "webcam" or source == "0":
             cmd.extend(["--input", "0", "--no-weather-mode"])
+        elif source_type == "browser_webcam":
+            relay_url = f"http://127.0.0.1:8000/api/relay/{camera_id}"
+            cmd.extend(["--input", relay_url, "--no-weather-mode"])
         else:
             video_file = None
             if source:
@@ -318,9 +329,10 @@ def ensure_default_stream_running(camera_id: str = "CAM_01"):
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database on startup, launch keepalive heartbeat task, and auto-start surveillance loop."""
+    """Initialize database on startup, launch keepalive heartbeat task, auto-start surveillance loop, and cloud sync."""
     init_db()
     asyncio.create_task(ws_manager.start_heartbeat())
+    asyncio.create_task(cloud_sync_daemon())
     try:
         ensure_default_stream_running(camera_id="CAM_01")
         print("[+] IBVAP Surveillance Pipeline auto-started for CAM_01 (Loop mode).")
@@ -438,8 +450,8 @@ def get_current_user_profile(current_user: dict = Depends(get_current_user)):
 # Admin Command Panel Endpoints (Requires 'admin' Role)
 # =====================================================================
 @app.get("/api/admin/watchlist")
-def get_admin_watchlist(current_user: dict = Depends(require_admin)):
-    """Retrieve all authorized personnel watchlist profiles (Admin only)."""
+def get_admin_watchlist(current_user: dict = Depends(require_supervisor_or_admin)):
+    """Retrieve all authorized personnel watchlist profiles (Supervisor/Admin)."""
     items = get_all_watchlist_personnel()
     return {
         "count": len(items),
@@ -454,9 +466,9 @@ async def add_admin_watchlist_person(
     expiry_date: Optional[str] = Form(None, description="Optional expiry date YYYY-MM-DD"),
     notes: Optional[str] = Form(None, description="Operational notes"),
     photo: Optional[UploadFile] = File(None, description="Facial portrait reference image"),
-    current_user: dict = Depends(require_admin),
+    current_user: dict = Depends(require_supervisor_or_admin),
 ):
-    """Add or update an authorized person on the facial recognition watchlist (Admin only)."""
+    """Add or update an authorized person on the facial recognition watchlist (Supervisor/Admin)."""
     clean_name = name.strip()
     if not clean_name:
         raise HTTPException(status_code=400, detail="Name cannot be empty.")
@@ -514,8 +526,8 @@ async def add_admin_watchlist_person(
 
 
 @app.delete("/api/admin/watchlist/{name}")
-def delete_admin_watchlist_person(name: str, current_user: dict = Depends(require_admin)):
-    """Delete a person from the watchlist and purge photo/embeddings (Admin only)."""
+def remove_admin_watchlist_person(name: str, current_user: dict = Depends(require_supervisor_or_admin)):
+    """Delete an authorized person from the facial recognition watchlist (Supervisor/Admin)."""
     success = delete_watchlist_person(name)
     if not success:
         raise HTTPException(status_code=404, detail=f"Watchlist person '{name}' not found.")
@@ -570,8 +582,8 @@ def get_watchlist_photo(filename: str):
 
 
 @app.get("/api/admin/vehicles")
-def get_admin_vehicles(current_user: dict = Depends(require_admin)):
-    """Retrieve all authorized vehicles on the whitelist (Admin only)."""
+def get_admin_authorized_vehicles(current_user: dict = Depends(require_supervisor_or_admin)):
+    """Retrieve all authorized vehicles (Supervisor/Admin)."""
     vehicles = get_all_authorized_vehicles()
     return {
         "count": len(vehicles),
@@ -580,8 +592,8 @@ def get_admin_vehicles(current_user: dict = Depends(require_admin)):
 
 
 @app.post("/api/admin/vehicles")
-def add_admin_vehicle(req: VehicleCreateRequest, current_user: dict = Depends(require_admin)):
-    """Add or update an authorized vehicle on the whitelist (Admin only)."""
+def add_admin_vehicle(req: VehicleCreateRequest, current_user: dict = Depends(require_supervisor_or_admin)):
+    """Add or update an authorized vehicle license plate (Supervisor/Admin)."""
     clean_plate = req.plate_number.strip().upper()
     if not clean_plate:
         raise HTTPException(status_code=400, detail="Plate number cannot be empty.")
@@ -604,8 +616,8 @@ def add_admin_vehicle(req: VehicleCreateRequest, current_user: dict = Depends(re
 
 
 @app.delete("/api/admin/vehicles/{plate_number}")
-def delete_admin_vehicle(plate_number: str, current_user: dict = Depends(require_admin)):
-    """Remove a vehicle from the authorized whitelist (Admin only)."""
+def remove_admin_authorized_vehicle(plate_number: str, current_user: dict = Depends(require_supervisor_or_admin)):
+    """Delete an authorized vehicle plate (Supervisor/Admin)."""
     success = delete_authorized_vehicle(plate_number)
     if not success:
         raise HTTPException(status_code=404, detail=f"Vehicle '{plate_number}' not found on whitelist.")
@@ -1049,6 +1061,44 @@ async def get_live_frame_snapshot(camera_id: str = "CAM_01"):
             "Access-Control-Allow-Origin": "*",
         },
     )
+
+
+# --- BROWSER WEBCAM RELAY STATE ---
+LATEST_UPLOADED_FRAMES: dict[str, bytes] = {}
+
+@app.websocket("/api/stream/upload/{camera_id}")
+async def webcam_upload_endpoint(websocket: WebSocket, camera_id: str):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            if data.startswith("data:image/jpeg;base64,"):
+                data = data.split(",", 1)[1]
+            try:
+                frame_bytes = base64.b64decode(data)
+                LATEST_UPLOADED_FRAMES[camera_id] = frame_bytes
+            except Exception:
+                pass
+    except WebSocketDisconnect:
+        pass
+
+async def mjpeg_relay_generator(camera_id: str):
+    while True:
+        frame = LATEST_UPLOADED_FRAMES.get(camera_id)
+        if frame:
+            yield (
+                b"--frame\r\n"
+                b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
+            )
+        await asyncio.sleep(0.03)
+
+@app.get("/api/relay/{camera_id}")
+async def mjpeg_relay_endpoint(camera_id: str):
+    return StreamingResponse(
+        mjpeg_relay_generator(camera_id),
+        media_type="multipart/x-mixed-replace; boundary=frame"
+    )
+# ------------------------------------
 
 
 @app.get("/api/stats")

@@ -33,7 +33,7 @@ import {
   deleteVehicle,
 } from '../services/api';
 
-export default function AdminPanel() {
+export default function AdminPanel({ isSupervisorMode = false }) {
   const { user, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState('personnel'); // 'personnel' | 'vehicles'
 

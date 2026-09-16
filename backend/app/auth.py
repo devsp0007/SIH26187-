@@ -42,6 +42,12 @@ DEFAULT_USERS = [
         "role": "operator",
         "full_name": "Surveillance Operator",
     },
+    {
+        "username": "supervisor",
+        "password": "Supervisor@IBVAP2026!",
+        "role": "supervisor",
+        "full_name": "Shift Supervisor (Middle Person)",
+    },
 ]
 
 
@@ -266,5 +272,14 @@ def require_admin(current_user: Dict[str, Any] = Depends(get_current_user)) -> D
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Administrative privileges required for this action.",
+        )
+    return current_user
+
+def require_supervisor_or_admin(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
+    """FastAPI dependency to ensure the user has at least 'supervisor' privileges."""
+    if current_user.get("role") not in ["admin", "supervisor"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Supervisor or Administrative privileges required for this action.",
         )
     return current_user
