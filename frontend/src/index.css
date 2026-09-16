@@ -1,43 +1,43 @@
 :root {
-  /* Surface & Background Hierarchy */
-  --bg-core: #f1f5f9;      /* Light gray */
-  --bg-surface: #ffffff;   /* Pure white */
-  --bg-panel: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
-  --bg-elevated: #ffffff;
+  /* Premium Dark Mode Surface & Background Hierarchy */
+  --bg-core: #090e17;      /* Very deep navy/black */
+  --bg-surface: #0f172a;   /* Deep slate */
+  --bg-panel: #141e33;
+  --bg-card: #162138;
+  --bg-card-hover: #1e293b;
+  --bg-elevated: #1e293b;
   
   /* Borders */
-  --border-subtle: #e2e8f0;
-  --border-active: #cbd5e1;
+  --border-subtle: #1e293b;
+  --border-active: #334155;
   --border-accent: #dc2626; /* Deep Red */
   --border-accent-glow: rgba(220, 38, 38, 0.35);
   
   /* Text Contrast Hierarchy */
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #475569;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
   --text-dim: #64748b;
   
   /* Colorblind-Considerate Severity Tokens */
-  --color-high: #dc2626;
-  --color-high-bg: rgba(220, 38, 38, 0.16);
-  --color-high-border: rgba(220, 38, 38, 0.55);
-  --color-high-glow: rgba(220, 38, 38, 0.3);
+  --color-high: #ef4444; /* Neon Red */
+  --color-high-bg: rgba(239, 68, 68, 0.16);
+  --color-high-border: rgba(239, 68, 68, 0.55);
+  --color-high-glow: rgba(239, 68, 68, 0.3);
   
-  --color-medium: #fbbf24;
+  --color-medium: #fbbf24; /* Yellow */
   --color-medium-bg: rgba(245, 158, 11, 0.16);
   --color-medium-border: rgba(245, 158, 11, 0.55);
   --color-medium-glow: rgba(245, 158, 11, 0.25);
   
-  --color-low: #16a34a;
-  --color-low-bg: rgba(22, 163, 74, 0.16);
-  --color-low-border: rgba(22, 163, 74, 0.5);
-  --color-low-glow: rgba(22, 163, 74, 0.25);
+  --color-low: #10b981; /* Neon Green */
+  --color-low-bg: rgba(16, 185, 129, 0.16);
+  --color-low-border: rgba(16, 185, 129, 0.5);
+  --color-low-glow: rgba(16, 185, 129, 0.25);
 
-  --color-cyan: #dc2626; /* Re-mapped to Red */
-  --color-cyan-glow: rgba(220, 38, 38, 0.3);
-  --color-blue: #16a34a; /* Re-mapped to Green */
+  --color-cyan: #ef4444; /* Re-mapped to Red for primary highlights */
+  --color-cyan-glow: rgba(239, 68, 68, 0.3);
+  --color-blue: #10b981; /* Re-mapped to Green for secondary highlights */
   --color-purple: #a855f7;
   
   /* Typography */
@@ -67,8 +67,12 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: none;
-  background-size: auto;
+  background-image: 
+    radial-gradient(circle at 50% -20%, rgba(239, 68, 68, 0.08), transparent 50%),
+    radial-gradient(circle at 85% 60%, rgba(16, 185, 129, 0.04), transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
 }
 
 /* Polished Scrollbar */
@@ -3037,15 +3041,15 @@ body {
 }
 
 .tab-btn:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
 }
 
 .tab-btn.active {
-  background: #ffffff;
-  color: var(--accent-red);
+  background: var(--bg-elevated);
+  color: var(--color-high);
   border: 1px solid var(--border-subtle);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .nav-tabs {
